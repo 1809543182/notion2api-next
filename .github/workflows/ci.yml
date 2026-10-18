@@ -27,3 +27,26 @@ jobs:
         run: python scripts/gen_model_data.py --check
       - name: Compile all modules
         run: python -m compileall -q app scripts
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure synthetic account for offline startup
+        run: |
+          printf '%s\n' 'APP_MODE=standard' 'API_KEY=ci-test-key' > .env
+          printf '%s\n' '[{"token_v2":"test-token","space_id":"test-space","user_id":"test-user"}]' > accounts.json
+      - name: Build and start container
+        run: docker compose up -d --build --wait --wait-timeout 120
+      - name: Check HTTP service and authentication
+        run: |
+          curl --fail http://127.0.0.1:8000/health
+          curl --fail http://127.0.0.1:8000/ > /dev/null
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/v1/models)" = 401
+          curl --fail -H 'Authorization: Bearer ci-test-key' http://127.0.0.1:8000/v1/models
+      - name: Container logs
+        if: failure()
+        run: docker compose logs --no-color
+      - name: Stop disposable test container
+        if: always()
+        run: docker compose down -v
