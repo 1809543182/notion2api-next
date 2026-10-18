@@ -47,7 +47,7 @@ docker compose down
 
 Docker 默认绑定本机；确需远程访问时，在设置鉴权和 HTTPS 后再调整 `BIND_HOST`。账号只读挂载，缺文件会直接报错。数据库使用命名卷，`docker compose down` 后继续保留；`down -v` 会删除数据，请勿用作普通停止命令。旧版手动 bind-mount 的数据库不会自动迁入该命名卷。
 
-macOS/Linux 自动浏览器登录与 Docker 镜像运行仍需要对应系统实际验证；本次本机 Docker daemon 未启动，因此仅检查了 Compose 配置和构建上下文，未宣称完成镜像构建或容器实测。
+本次本机 Docker daemon 未启动；已改在 GitHub 托管的 Linux 环境中完成镜像构建、容器启动、健康检查、静态首页和模型接口鉴权验证，全部通过。Windows、Linux、macOS 的离线测试也全部通过。见 [CI 验证记录](https://github.com/1809543182/notion2api-next/actions/runs/39081769243)。macOS/Linux 自动浏览器登录仍需实际账号与交互环境验证。
 
 ## 依赖与验证范围
 
