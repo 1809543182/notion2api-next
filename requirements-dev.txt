@@ -1,0 +1,2 @@
+# Test/lint tooling (not required at runtime)
+pytest>=8.0

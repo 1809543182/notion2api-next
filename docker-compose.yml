@@ -1,0 +1,58 @@
+# ============================================================
+# Notion2API Next - Docker Compose
+# ============================================================
+#   docker compose up -d --build
+#   docker compose logs -f --tail=50
+#   curl http://localhost:8000/health
+# ============================================================
+
+services:
+  notion2api-next:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: notion2api-next:latest
+    container_name: notion2api_next
+    restart: always
+
+    ports:
+      - "${BIND_HOST:-127.0.0.1}:${HOST_PORT:-8000}:8000"
+
+    env_file:
+      - .env
+    environment:
+      - DB_PATH=/app/data/conversations.db
+      - PYTHONUNBUFFERED=1
+      - TZ=Asia/Shanghai
+
+    volumes:
+      - notion2api_data:/app/data
+      - type: bind
+        source: ./accounts.json
+        target: /app/accounts.json
+        read_only: true
+        bind:
+          create_host_path: false
+
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
+
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  notion2api_data:

@@ -1,0 +1,11 @@
+[
+  {
+    "profile_name": "default",
+    "token_v2": "PASTE_TOKEN_V2_HERE",
+    "space_id": "PASTE_SPACE_ID_HERE",
+    "user_id": "PASTE_USER_ID_HERE",
+    "space_view_id": "optional",
+    "user_name": "your name",
+    "user_email": "you@example.com"
+  }
+]
